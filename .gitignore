@@ -4,6 +4,7 @@ data/**
 !data/
 !data/raw/
 !data/raw/content_refresh_anonymized.csv
+FlyRank_AI.worktrees/
 
 # Never commit bulk dataset dumps or archives
 *.parquet
