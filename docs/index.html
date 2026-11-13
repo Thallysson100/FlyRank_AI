@@ -1,0 +1,216 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Which pages should an editor review first?</title>
+<meta name="description" content="FlyRank ML Internship capstone: a time-aware, site-relative decline-risk queue for content refresh.">
+<style>
+:root { --ink:#1f2a33; --muted:#5f6b73; --accent:#2f6db5; --accent-soft:#eaf1fa; --rule:#d5dce2; --zebra:#f6f8fa;
+         --bg:#ffffff; --card:#ffffff; }
+@media (prefers-color-scheme: dark) {
+  :root { --ink:#e6ebef; --muted:#9aa7b0; --accent:#7fb0ec; --accent-soft:#1c2a3a; --rule:#33404a; --zebra:#1a2229;
+           --bg:#11171c; --card:#f4f6f8; }
+}
+* { box-sizing:border-box; }
+body { margin:0; background:var(--bg); color:var(--ink); font:17px/1.65 Georgia, "Times New Roman", serif; }
+main { max-width:880px; margin:0 auto; padding:40px 16px 64px; }
+h1, h2, h3, .meta, table, figcaption, .btn, .kpi, nav { font-family:-apple-system, "Segoe UI", Helvetica, Arial, sans-serif; }
+h1 { font-size:2.1rem; line-height:1.2; margin:0 0 6px; }
+.sub { font-size:1.15rem; color:var(--muted); margin:0 0 14px; font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif; }
+.meta { color:var(--muted); font-size:.85rem; }
+h2 { color:var(--accent); font-size:1.35rem; margin:44px 0 10px; padding-top:8px; border-top:1px solid var(--rule); }
+h3 { font-size:1.05rem; margin:24px 0 6px; }
+a { color:var(--accent); }
+.abstract { background:var(--accent-soft); border-left:4px solid var(--accent); padding:16px 20px; border-radius:4px; }
+.btns { display:flex; flex-wrap:wrap; gap:10px; margin:18px 0 6px; }
+.btn { display:inline-block; padding:9px 16px; border-radius:6px; border:1px solid var(--accent); text-decoration:none;
+        font-size:.9rem; font-weight:600; }
+.btn.primary { background:var(--accent); color:var(--bg); }
+.kpis { display:grid; grid-template-columns:repeat(auto-fit, minmax(170px, 1fr)); gap:12px; margin:22px 0; }
+.kpi { border:1px solid var(--rule); border-radius:8px; padding:12px 14px; }
+.kpi b { display:block; font-size:1.55rem; color:var(--accent); }
+.kpi span { font-size:.8rem; color:var(--muted); line-height:1.35; display:block; }
+.tbl { overflow-x:auto; margin:12px 0 18px; }
+table { border-collapse:collapse; width:100%; font-size:.82rem; line-height:1.4; }
+th { background:var(--accent); color:var(--bg); text-align:left; padding:6px 8px; white-space:nowrap; }
+td { padding:5px 8px; border-bottom:1px solid var(--rule); vertical-align:top; }
+tbody tr:nth-child(even) td { background:var(--zebra); }
+tr.hl td { background:var(--accent-soft) !important; font-weight:600; }
+figure { margin:22px 0; }
+figure img { width:100%; height:auto; background:var(--card); border:1px solid var(--rule); border-radius:4px; padding:6px; }
+figcaption { font-size:.8rem; color:var(--muted); margin-top:6px; line-height:1.45; }
+nav { font-size:.85rem; margin:18px 0; color:var(--muted); }
+nav a { margin-right:12px; white-space:nowrap; }
+.pdf { width:100%; height:80vh; border:1px solid var(--rule); border-radius:4px; }
+ul { padding-left:22px; } li { margin:4px 0; }
+code { font-size:.85em; }
+pre { background:var(--zebra); padding:12px; border-radius:4px; overflow-x:auto; font-size:.8rem; line-height:1.5; }
+footer { margin-top:48px; font-size:.8rem; color:var(--muted); font-family:-apple-system,"Segoe UI",Helvetica,Arial,sans-serif; }
+@media (max-width:600px) { body { font-size:16px; } h1 { font-size:1.6rem; } }
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Which pages should an editor review first?</h1>
+  <p class="sub">A time-aware, site-relative decline-risk queue for content refresh</p>
+  <p class="meta">FlyRank ML Internship capstone · Lane: Refresh / Content Opportunity Scoring · November 2026</p>
+  <div class="btns">
+    <a class="btn primary" href="capstone_paper.pdf" target="_blank" rel="noopener">Read the full paper (PDF)</a>
+    <a class="btn" href="https://github.com/Thallysson100/FlyRank_AI/blob/main/work/notebooks/capstone.ipynb" target="_blank" rel="noopener noreferrer">Notebook</a>
+    <a class="btn" href="https://github.com/Thallysson100/FlyRank_AI" target="_blank" rel="noopener noreferrer">Repository</a>
+  </div>
+  <nav><a href="#abstract">Abstract</a><a href="#intro">Problem</a><a href="#data">Data</a><a href="#method">Methodology</a><a href="#results">Results</a><a href="#limits">Limitations</a><a href="#recs">Recommendations</a><a href="#repro">Reproducibility</a><a href="#ack">Data credit</a></nav>
+</header>
+
+<section id="abstract">
+  <h2>Abstract</h2>
+  <div class="abstract">Content teams can review only a handful of pages per cycle, so this work asks which visible pages are most likely to fall clearly behind their own site&#x27;s search visibility next month. Using the FlyRank pseudonymized warehouse release (78.8M daily rows, 2025-01-27 to 2026-06-30), I built a page × month-end panel whose features use only the three months before each decision date, and labelled a page as declining when its next-month daily impressions fell more than 20% below the median page of the same site — a site-relative label that removes the site-wide shocks which made an absolute label 79% positive in the test month. A histogram gradient-boosting model was compared with transparent rules on a time-aware split (trained on past months, selected on 2026-05, evaluated once on a sealed 2026-06 month), with leakage checks and a never-seen-client check. On 89,237 test pages (base rate 39.6%) the model reached PR-AUC 0.724 versus 0.683 for the best momentum rule (+0.041, 95% client-bootstrap CI +0.021 to +0.067), and ordering the same score by visibility at stake covered 66% of site-relative lost impressions in 10% of pages, although the gain over the rule shrinks to +0.013 on never-seen clients. The result is a reason-coded review queue (protect, refresh, metadata, prune/merge, expand, monitor) meant as decision support for human editors; it does not show that refreshing a page causes recovery.</div>
+  <div class="kpis">
+    <div class="kpi"><b>0.724</b><span>model PR-AUC on the sealed month (best rule: 0.683)</span></div>
+    <div class="kpi"><b>+0.041</b><span>gap over the rule, 95% CI +0.021 to +0.067</span></div>
+    <div class="kpi"><b>66%</b><span>of lost impressions found in the top 10% of pages (impact ordering)</span></div>
+    <div class="kpi"><b>+0.013</b><span>gap on never-seen clients — the honest limit</span></div>
+  </div>
+</section>
+
+<section id="intro">
+  <h2>1. Introduction and problem statement</h2>
+  <p>Every month some pages start losing search visibility, and an editor has a limited number of review hours. Reviewing in
+  arbitrary order wastes hours on pages that are fine; missing a sliding page with real demand lets the loss continue. This work
+  supports one recurring decision: <b>at the end of each month, which visible pages enter next month's review queue, in what
+  order, with what suggested action and why.</b> In the last month of the panel there are 92,932 eligible visible
+  pages — far too many to review by hand.</p>
+  <p>The unit of analysis is one page × one monthly decision date. The output is <b>decision support</b> for a human reviewer:
+  not an automated edit, not a promise that a refresh recovers traffic, and not a statement about how search engines rank pages.</p>
+</section>
+
+<section id="data">
+  <h2>2. Data</h2>
+  <p>FlyRank pseudonymized warehouse release <i>flyrank_pseudonymized_warehouse_release_v20260703</i> (<a href="https://huggingface.co/datasets/FlyRank/internship-warehouse" target="_blank" rel="noopener noreferrer">Hugging Face, gated</a>), queried in place
+  with DuckDB. Tables used: <code>dim_clients</code> (104 rows), <code>dim_content</code>
+  (519,606) and <code>fact_content_daily_performance</code> (78,835,655 daily rows,
+  2025-01-27 → 2026-06-30), reduced once to 2.87M page-month rows. The query table was <b>not</b> used: its fixed
+  window overlaps the test month. A grain probe found <b>6,390 exact duplicate rows</b> in the
+  June-2026 partition (the test month); they were dropped.</p>
+  <p><b>Exclusions, and why:</b></p>
+  <ul>
+    <li>Only 67 of 104 clients ever record a search impression; the client must be tracked in all four months involved, so "no impressions" never means "no tracking".</li>
+    <li>Impressions in each of the three feature months, and ≥ 300 in total (≥ 100/month), so a 20% drop is not noise.</li>
+    <li>Pages at least 90 days old (young pages are still ramping up).</li>
+    <li>Pages deleted by export time (0.12% of labelled rows): their drop is removal, not decay.</li>
+    <li>Sites with fewer than 20 eligible pages in a month (the site median would be unstable).</li>
+  </ul>
+  <p>All identifiers are pseudonymized; no client names, domains, URLs, titles or queries appear anywhere in this work.</p>
+</section>
+
+<section id="method">
+  <h2>3. Methodology</h2>
+  <h3>Label: site-relative decline</h3>
+  <p>The first label — "next-month daily impressions more than 20% below the page's 3-month average" — measured the whole panel,
+  not the page: panel impressions slid from 9.9M/day (early April) to
+  6.9M/day (late June 2026), so 79% of test pages
+  would have "declined". The final label marks a page as declining when its ratio is <b>below 0.80 × the median ratio of the
+  eligible pages of the same site in the same month</b>. Across months the absolute label swings between 5%
+  and 79%; the site-relative label stays between 31% and 40%.</p>
+  <figure><a href="assets/fig01_label_base_rate.png" target="_blank" rel="noopener"><img src="assets/fig01_label_base_rate.png" alt="Figure 1 — Left: share of eligible pages labelled declining per month (grey: rejected absolute label; blue: final site-relative label). Right: panel impressions per day, April–June 2026." loading="lazy"></a><figcaption>Figure 1 — Left: share of eligible pages labelled declining per month (grey: rejected absolute label; blue: final site-relative label). Right: panel impressions per day, April–June 2026.</figcaption></figure>
+  <h3>Features, baselines and models</h3>
+  <p>Features use only the three months before the decision date: visibility level, momentum (last month vs. 3-month average,
+  month-over-month, second half vs. whole last month, volatility), position and CTR (level and change), persistence, GA4
+  engagement (only where GA4 data is available), site context (site momentum, page momentum relative to its site) and page
+  metadata. Excluded on purpose: pseudonymous IDs, update/optimisation dates (export-time, often after the panel), deletion
+  status, generation metadata and anything from the label month.</p>
+  <p>Baselines: <b>B0</b> my week-4 volume rule; <b>B1</b> page momentum; <b>B2</b> page momentum relative to its site — the
+  strongest simple rule. Models: logistic regression and histogram gradient boosting in scikit-learn pipelines fitted on training
+  months only; selected: <i>HGB lr=0.05 leaves=31 l2=1.0 iters=300</i>. Seed 42; reruns are bit-identical.</p>
+  <h3>Validation design</h3>
+  <div class="tbl"><table><thead><tr><th>Role</th><th>Label months</th><th>Rows</th><th>Used for</th></tr></thead><tbody><tr><td>train (selection)</td><td>2025-05 … 2026-04</td><td>275,266</td><td>fit candidates</td></tr><tr><td>validation</td><td>2026-05</td><td>76,025</td><td>choose model + settings</td></tr><tr><td>train (final)</td><td>2025-05 … 2026-05</td><td>351,291</td><td>refit chosen model once</td></tr><tr class="hl"><td>sealed test</td><td>2026-06</td><td>89,237</td><td>evaluated once</td></tr><tr><td>live queue</td><td>2026-07 (no outcome yet)</td><td>92,932</td><td>the recommendations</td></tr></tbody></table></div>
+  <p><b>Leakage checks</b> (all passed): forbidden columns absent; every feature month precedes its label month; the strongest
+  single feature reaches ROC-AUC 0.749 alone (rel_mom_vs_site, a momentum signal);
+  models trained on shuffled labels score 0.500 on average (chance). A stricter check groups
+  by client on top of the time split to test never-seen sites.</p>
+</section>
+
+<section id="results">
+  <h2>4. Results</h2>
+  <p>Sealed test, 2026-06: 89,237 pages, base rate 39.6%, same pages for every ranking.</p>
+  <div class="tbl"><table><thead><tr><th>Ranking</th><th>PR-AUC</th><th>ROC-AUC</th><th>Precision in top 10%</th><th>Lift top 10%</th><th>Lost impressions in top 10%</th></tr></thead><tbody><tr class="hl"><td>model — probability</td><td>0.724</td><td>0.800</td><td>85.7%</td><td>2.16×</td><td>32.9%</td></tr><tr><td>model — expected impact</td><td>0.497</td><td>0.614</td><td>57.3%</td><td>1.45×</td><td>65.6%</td></tr><tr><td>B2 site-relative momentum rule</td><td>0.683</td><td>0.755</td><td>82.2%</td><td>2.08×</td><td>17.4%</td></tr><tr><td>B1 momentum rule</td><td>0.666</td><td>0.743</td><td>80.6%</td><td>2.03×</td><td>14.9%</td></tr><tr><td>B0 volume rule (w04)</td><td>0.343</td><td>0.379</td><td>20.8%</td><td>0.53×</td><td>38.0%</td></tr></tbody></table></div>
+  <p>The model's probability ranking reaches PR-AUC <b>0.724</b> / ROC-AUC <b>0.800</b> vs
+  0.683 / 0.755 for B2: a gap of <b>+0.041 (95% client-bootstrap CI +0.021 to +0.067)</b>,
+  positive in every resample. Ordering the same score by visibility at stake puts 66% of all
+  site-relative lost impressions in the top 10% of pages. My earlier volume rule ranks worse than chance for site-relative decline
+  (ROC-AUC 0.379) — big pages are less likely to fall behind their site — yet it still finds high-stake pages.</p>
+  <figure><a href="assets/fig03_test_metrics_bar.png" target="_blank" rel="noopener"><img src="assets/fig03_test_metrics_bar.png" alt="Figure 2 — Sealed test: model rankings vs transparent baselines on the same pages." loading="lazy"></a><figcaption>Figure 2 — Sealed test: model rankings vs transparent baselines on the same pages.</figcaption></figure>
+  <figure><a href="assets/fig02_test_ranking_quality.png" target="_blank" rel="noopener"><img src="assets/fig02_test_ranking_quality.png" alt="Figure 3 — Precision–recall curves; share of lost impressions covered as pages are reviewed in queue order; observed decline by score decile." loading="lazy"></a><figcaption>Figure 3 — Precision–recall curves; share of lost impressions covered as pages are reviewed in queue order; observed decline by score decile.</figcaption></figure>
+  <h3>Robustness</h3>
+  <div class="tbl"><table><thead><tr><th>Variant (sealed test)</th><th>PR-AUC</th><th>ROC-AUC</th><th>Precision top 10%</th></tr></thead><tbody><tr><td>model — probability</td><td>0.724</td><td>0.800</td><td>85.7%</td></tr><tr><td>model — probability, unseen clients</td><td>0.695</td><td>0.769</td><td>83.0%</td></tr><tr><td>B2 site-relative momentum rule</td><td>0.683</td><td>0.755</td><td>82.2%</td></tr><tr><td>model — probability, no dim_content metadata</td><td>0.717</td><td>0.790</td><td>84.9%</td></tr></tbody></table></div>
+  <p>On never-seen clients the gain over B2 shrinks to +0.013: much of the edge comes from
+  having seen a site's earlier months. Without export-time page metadata the result barely moves. The model beats B2 at every
+  decline threshold tested (0.7×, 0.8×, 0.9× the site median).</p>
+  <figure><a href="assets/fig04_permutation_importance.png" target="_blank" rel="noopener"><img src="assets/fig04_permutation_importance.png" alt="Figure 4 — Permutation importance on the sealed month: the score is mostly a momentum score (page vs. site trend, late-month slide). Observed associations, not ranking factors." loading="lazy"></a><figcaption>Figure 4 — Permutation importance on the sealed month: the score is mostly a momentum score (page vs. site trend, late-month slide). Observed associations, not ranking factors.</figcaption></figure>
+</section>
+
+<section id="limits">
+  <h2>5. Limitations and honest framing</h2>
+  <p>All claims here are <b>observed, measured, directional and decision-support</b>. What this work cannot say:</p>
+  <ul>
+    <li><b>No causality:</b> nothing shows that refreshing a flagged page causes recovery — that needs an experiment.</li>
+    <li><b>No search-engine claims:</b> the drivers are associations in this data, mostly momentum.</li>
+    <li><b>One test month</b> with a strong panel-wide drop; other seasons could differ.</li>
+    <li><b>Unbalanced panel:</b> 27 eligible clients, one of them 24% of test rows; on never-seen sites the model barely beats the rule.</li>
+    <li><b>The label is a definition</b> and ignores site-wide drops by design — those need a separate site-level monitor.</li>
+    <li><b>Calibration:</b> scores rank well but are not exact probabilities when the base rate shifts.</li>
+    <li><b>Sudden collapses</b> with no warning in the feature window (20% of the 200 largest losses) cannot be caught by a monthly score.</li>
+  </ul>
+</section>
+
+<section id="recs">
+  <h2>6. Ranked recommendations — the action playbook</h2>
+  <p>Pages in the top 30% of risk enter the queue (confidence <i>high</i> = top 10%), ordered by visibility at stake
+  (risk × daily impressions); the first matching rule sets the action.</p>
+  <div class="tbl"><table><thead><tr><th>Action</th><th>Rule (pre-decision signals only)</th><th>What the editor checks</th></tr></thead><tbody><tr><td><b>PROTECT</b> — page-one refresh</td><td>avg position ≤ 10 and top-quartile visibility</td><td>update facts and dates, strengthen the section matching the intent, check internal links; change little else</td></tr><tr><td><b>METADATA REVIEW</b></td><td>CTR fell while position held or improved</td><td>title / description vs. query intent</td></tr><tr><td><b>PRUNE / MERGE REVIEW</b></td><td>bottom-quartile visibility and avg position &gt; 20</td><td>stronger sibling page? merge or redirect</td></tr><tr><td><b>REFRESH</b> — content</td><td>everything else in the queue</td><td>content gaps, outdated sections, depth</td></tr><tr><td><b>EXPAND</b> — opportunity</td><td>low risk, growing &gt; 20%, avg position 4–20</td><td>add depth to reach page one</td></tr><tr><td><b>MONITOR</b></td><td>everything else</td><td>no action this cycle</td></tr></tbody></table></div>
+  <p><b>Back-test on the sealed month:</b> the queue (30% of pages) held about 63% of all site-relative lost
+  impressions; PROTECT pages alone held 41%, and 74% of them
+  really fell behind. Pages tagged EXPAND declined only 8% of the time.</p>
+  <h3>The live queue (decision date 2026-06-30, for July 2026)</h3>
+  <div class="tbl"><table><thead><tr><th>Action</th><th>Pages</th><th>Median risk</th><th>Median impressions/day</th><th>Share of visibility at stake</th></tr></thead><tbody><tr><td>MONITOR</td><td>59,740</td><td>0.25</td><td>23</td><td>44.2%</td></tr><tr><td>PROTECT — page-one refresh</td><td>4,127</td><td>0.86</td><td>182</td><td>31.4%</td></tr><tr><td>REFRESH — content</td><td>19,960</td><td>0.80</td><td>16</td><td>22.0%</td></tr><tr><td>EXPAND — opportunity</td><td>5,313</td><td>0.08</td><td>29</td><td>1.7%</td></tr><tr><td>PRUNE / MERGE REVIEW</td><td>3,160</td><td>0.81</td><td>5</td><td>0.5%</td></tr><tr><td>METADATA REVIEW</td><td>632</td><td>0.81</td><td>7</td><td>0.3%</td></tr></tbody></table></div>
+  <figure><a href="assets/fig05_live_queue_actions.png" target="_blank" rel="noopener"><img src="assets/fig05_live_queue_actions.png" alt="Figure 5 — Live queue: pages per action and share of visibility at stake." loading="lazy"></a><figcaption>Figure 5 — Live queue: pages per action and share of visibility at stake.</figcaption></figure>
+  <div class="tbl"><table><thead><tr><th>#</th><th>Page ID</th><th>Action</th><th>Risk</th><th>Impr./day</th><th>Pos.</th><th>Reason codes</th></tr></thead><tbody><tr><td>1</td><td>0e03de76…</td><td>PROTECT</td><td>0.84</td><td>6,219</td><td>2.5</td><td>sliding vs site, page one, high visibility</td></tr><tr><td>2</td><td>77276ad7…</td><td>PROTECT</td><td>0.81</td><td>5,547</td><td>5.0</td><td>sliding vs site, position worsening, page one, high visibility</td></tr><tr><td>3</td><td>39e19a3e…</td><td>PROTECT</td><td>0.99</td><td>4,208</td><td>9.8</td><td>sliding vs site, late month slide, position worsening, page one, high visibility</td></tr><tr><td>4</td><td>e7b5dd4d…</td><td>PROTECT</td><td>0.70</td><td>5,678</td><td>5.5</td><td>sliding vs site, late month slide, position worsening, page one, high visibility</td></tr><tr><td>5</td><td>11bf4c33…</td><td>PROTECT</td><td>0.94</td><td>3,667</td><td>8.4</td><td>late month slide, page one, high visibility</td></tr><tr><td>6</td><td>15168cd1…</td><td>PROTECT</td><td>0.86</td><td>3,863</td><td>3.7</td><td>sliding vs site, late month slide, page one, high visibility</td></tr><tr><td>7</td><td>4ffe1811…</td><td>PROTECT</td><td>0.90</td><td>3,663</td><td>2.2</td><td>sliding vs site, page one, high visibility</td></tr><tr><td>8</td><td>99fc6465…</td><td>REFRESH</td><td>0.98</td><td>3,122</td><td>10.2</td><td>sliding vs site, late month slide, position worsening, high visibility</td></tr><tr><td>9</td><td>9648c4d1…</td><td>PROTECT</td><td>0.94</td><td>2,997</td><td>2.3</td><td>sliding vs site, page one, high visibility</td></tr><tr><td>10</td><td>9111c7d2…</td><td>PROTECT</td><td>0.88</td><td>2,848</td><td>7.8</td><td>sliding vs site, late month slide, page one, high visibility</td></tr></tbody></table></div>
+  <p class="meta">Top 10 of 27,879 queued pages. Shortened pseudonymous page IDs only; no client identifiers.</p>
+  <ul>
+    <li>Each month, score every visible page and publish the queue.</li>
+    <li>Review PROTECT pages first: page-one pages losing ground faster than their site. Change as little as possible.</li>
+    <li>Work through REFRESH pages as capacity allows; batch METADATA and PRUNE/MERGE reviews monthly.</li>
+    <li>Hand EXPAND pages to content creators; treat site-wide drops separately.</li>
+    <li>Log every change, so a later experiment can measure whether refreshes actually help.</li>
+  </ul>
+</section>
+
+<section id="repro">
+  <h2>7. Reproducibility</h2>
+  <ul>
+    <li>Repository: <a href="https://github.com/Thallysson100/FlyRank_AI" target="_blank" rel="noopener noreferrer">https://github.com/Thallysson100/FlyRank_AI</a></li>
+    <li>Capstone notebook: <a href="https://github.com/Thallysson100/FlyRank_AI/blob/main/work/notebooks/capstone.ipynb" target="_blank" rel="noopener noreferrer">work/notebooks/capstone.ipynb</a> · <a href="https://colab.research.google.com/github/Thallysson100/FlyRank_AI/blob/main/work/notebooks/capstone.ipynb" target="_blank" rel="noopener noreferrer">open in Colab</a></li>
+    <li>Weekly notebooks it builds on: <code>work/notebooks/w01–w05</code></li>
+    <li>Paper builders: <code>work/build_capstone_pdf.py</code> (PDF) and <code>work/build_paper_site.py</code> (this page)</li>
+    <li>Full paper: <a href="capstone_paper.pdf" target="_blank" rel="noopener">capstone_paper.pdf</a></li>
+  </ul>
+<pre>python -m venv venv &amp;&amp; venv/bin/pip install -r requirements.txt duckdb ipykernel nbconvert
+echo "HF_TOKEN=&lt;your read token&gt;" &gt; .env        # never committed
+venv/bin/jupyter nbconvert --to notebook --execute --inplace work/notebooks/capstone.ipynb
+venv/bin/python work/build_capstone_pdf.py &amp;&amp; venv/bin/python work/build_paper_site.py</pre>
+  <p>Seed 42; deterministic row order; the sealed-test metrics are committed in
+  <code>work/outputs/capstone/capstone_results.json</code>.</p>
+</section>
+
+<section id="ack">
+  <h2>8. Acknowledgments and data credit</h2>
+  <p>Built on the <a href="https://flyrank.ai" target="_blank" rel="noopener noreferrer">FlyRank ML Internship dataset</a>. Thanks to FlyRank for releasing real, pseudonymized
+  search-performance data for research and learning.</p>
+</section>
+
+<footer>FlyRank ML Internship capstone · built from <code>work/outputs/capstone/</code> · <a href="https://flyrank.ai" target="_blank" rel="noopener noreferrer">flyrank.ai</a></footer>
+</main>
+</body>
+</html>
