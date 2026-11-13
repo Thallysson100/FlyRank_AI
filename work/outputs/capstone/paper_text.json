@@ -1,0 +1,15 @@
+{
+  "title": "Which pages should an editor review first? A time-aware, site-relative decline-risk queue for content refresh",
+  "abstract": "Which visible pages should a content editor review first, before they lose search visibility? Using the FlyRank pseudonymized warehouse release (78,835,655 daily rows, 27 Jan 2025 to 30 Jun 2026), we built a monthly page panel and labelled a page as declining when its next-month daily impressions fell more than 20% below the median page of its own site, so that site-wide shocks are not mistaken for page decay. A histogram gradient-boosting model using only information available at the decision date was selected on May 2026 and evaluated once on a sealed June 2026 month (89,237 pages, base rate 39.6%), reaching PR-AUC 0.724 versus 0.683 for the best transparent momentum rule (gap +0.041, 95% client-bootstrap CI +0.021 to +0.067), while an impact-ordered version of the score covers 66% of site-relative lost impressions in its top 10% of pages. The output is a ranked, reason-coded review queue for decision support; it does not show that refreshing a page causes recovery.",
+  "introduction": "Editors have limited review hours; ~90k visible pages per month need triage. The decision supported: which pages enter next month's review queue, with what action and why.",
+  "key_findings": [
+    "Absolute decline label swings from 5% to 79% with site-wide shocks; the site-relative label is stable at 31\u201340%.",
+    "Sealed test: model PR-AUC 0.724 / ROC-AUC 0.800 vs B2 rule 0.683 / 0.755.",
+    "On unseen clients the gap over B2 shrinks to +0.013 PR-AUC.",
+    "The w04 volume rule ranks worse than chance for site-relative decline (ROC-AUC 0.38) but finds high-stake pages.",
+    "Score drivers are momentum signals (page vs. site trend, late-month slide) \u2014 observed associations, not ranking factors.",
+    "Queue back-test: PROTECT pages (5% of pages) held 41% of site-relative lost impressions."
+  ],
+  "acknowledgment": "Built on the FlyRank ML Internship dataset (https://flyrank.ai).",
+  "claims_language": "observed / measured / directional / decision-support"
+}

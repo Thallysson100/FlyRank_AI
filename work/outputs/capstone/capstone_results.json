@@ -1,0 +1,650 @@
+{
+  "seed": 42,
+  "release": "flyrank_pseudonymized_warehouse_release_v20260703",
+  "config": {
+    "feature_window_months": 3,
+    "label_window_months": 1,
+    "decline_ratio": 0.8,
+    "min_impressions_feature_window": 300,
+    "min_active_months": 3,
+    "min_page_age_days": 90,
+    "val_label_month": "2026-05",
+    "test_label_month": "2026-06",
+    "live_decision_date": "2026-06-30",
+    "top_k": [
+      20,
+      50,
+      100,
+      500
+    ]
+  },
+  "data_counts": {
+    "dim_clients": 104,
+    "dim_content": 519606,
+    "fact_daily_rows": 78835655,
+    "date_min": "2025-01-27",
+    "date_max": "2026-06-30",
+    "exact_duplicate_rows_dropped": 6390
+  },
+  "clients": {
+    "in_daily_facts": 70,
+    "with_impressions": 67,
+    "gsc_start_agreement": 0.957,
+    "with_gap_month": 4
+  },
+  "label": {
+    "definition": "page daily impressions in label month < 0.80 x site median ratio (eligible pages, same client, same month)",
+    "deleted_share_of_labelled_rows": 0.0012,
+    "modelling_rows_labelled": 440528,
+    "live_rows": 92932,
+    "base_rate_site_relative_overall": 0.3603,
+    "base_rate_absolute_overall": 0.4576,
+    "test_month_base_rate_site_relative": 0.3962,
+    "test_month_base_rate_absolute": 0.7866,
+    "daily_impressions_early_april": 9869307.57142857,
+    "daily_impressions_late_june": 6921183.0
+  },
+  "features": {
+    "numeric": [
+      "log_imp_90",
+      "log_clk_90",
+      "mom_f3_vs_90",
+      "mom_f2_vs_f1",
+      "mom_f3_vs_f2",
+      "mom_h2_vs_f3",
+      "cv_3m",
+      "pos_90",
+      "pos_delta",
+      "ctr_90",
+      "ctr_delta",
+      "active_share_f3",
+      "active_share_90",
+      "has_ga4",
+      "ses_per_day",
+      "engaged_rate",
+      "organic_share",
+      "has_ai_sessions",
+      "site_mom_f3_vs_90",
+      "site_mom_f3_vs_f1",
+      "rel_mom_vs_site",
+      "log_site_pages",
+      "age_days",
+      "word_count",
+      "search_volume",
+      "cpc",
+      "competition",
+      "backlinks",
+      "keyword_token_count",
+      "category_count",
+      "has_kw_data"
+    ],
+    "categorical": [
+      "content_type",
+      "main_intent",
+      "competition_level"
+    ],
+    "metadata_block": [
+      "age_days",
+      "word_count",
+      "search_volume",
+      "cpc",
+      "competition",
+      "backlinks",
+      "keyword_token_count",
+      "category_count",
+      "has_kw_data",
+      "content_type",
+      "main_intent",
+      "competition_level"
+    ]
+  },
+  "leakage_checks": {
+    "forbidden_columns_absent": true,
+    "feature_months_precede_label": true,
+    "max_single_feature_auc": 0.749,
+    "top_single_feature": "rel_mom_vs_site",
+    "shuffled_label_val_auc_mean": 0.4996,
+    "shuffled_label_val_auc_range": [
+      0.454,
+      0.5486
+    ]
+  },
+  "split_rows": {
+    "train_selection": 275266,
+    "validation": 76025,
+    "train_final": 351291,
+    "test": 89237,
+    "live": 92932
+  },
+  "model_selection": {
+    "selected": "HGB lr=0.05 leaves=31 l2=1.0 iters=300",
+    "validation_month": "2026-05",
+    "validation_table": [
+      {
+        "model": "HGB lr=0.05 leaves=31 l2=1.0 iters=300",
+        "PR-AUC": 0.7344,
+        "ROC-AUC": 0.7972,
+        "base_rate": 0.3772,
+        "P@20": 1.0,
+        "P@50": 0.98,
+        "P@100": 0.99,
+        "P@500": 0.982,
+        "P@top10%": 0.8811,
+        "lift@top10%": 2.3356,
+        "lost_imp_captured@top10%": 0.2797,
+        "site_P@20_mean": 0.94,
+        "fit_s": 8.7
+      },
+      {
+        "model": "HGB lr=0.03 leaves=63 l2=5.0 iters=600",
+        "PR-AUC": 0.7325,
+        "ROC-AUC": 0.7916,
+        "base_rate": 0.3772,
+        "P@20": 1.0,
+        "P@50": 1.0,
+        "P@100": 1.0,
+        "P@500": 0.982,
+        "P@top10%": 0.8856,
+        "lift@top10%": 2.3474,
+        "lost_imp_captured@top10%": 0.323,
+        "site_P@20_mean": 0.925,
+        "fit_s": 20.0
+      },
+      {
+        "model": "HGB lr=0.1 leaves=15 l2=1.0 iters=200",
+        "PR-AUC": 0.731,
+        "ROC-AUC": 0.7938,
+        "base_rate": 0.3772,
+        "P@20": 1.0,
+        "P@50": 1.0,
+        "P@100": 0.99,
+        "P@500": 0.966,
+        "P@top10%": 0.8716,
+        "lift@top10%": 2.3105,
+        "lost_imp_captured@top10%": 0.2825,
+        "site_P@20_mean": 0.9175,
+        "fit_s": 4.8
+      },
+      {
+        "model": "HGB lr=0.05 leaves=63 l2=1.0 iters=400",
+        "PR-AUC": 0.7291,
+        "ROC-AUC": 0.7932,
+        "base_rate": 0.3772,
+        "P@20": 1.0,
+        "P@50": 1.0,
+        "P@100": 1.0,
+        "P@500": 0.984,
+        "P@top10%": 0.8799,
+        "lift@top10%": 2.3324,
+        "lost_imp_captured@top10%": 0.3148,
+        "site_P@20_mean": 0.9275,
+        "fit_s": 13.0
+      },
+      {
+        "model": "logistic regression",
+        "PR-AUC": 0.7094,
+        "ROC-AUC": 0.7875,
+        "base_rate": 0.3772,
+        "P@20": 1.0,
+        "P@50": 0.98,
+        "P@100": 0.97,
+        "P@500": 0.956,
+        "P@top10%": 0.8432,
+        "lift@top10%": 2.2352,
+        "lost_imp_captured@top10%": 0.2152,
+        "site_P@20_mean": 0.945,
+        "fit_s": 40.8
+      },
+      {
+        "model": "B2 site-relative momentum rule",
+        "PR-AUC": 0.6734,
+        "ROC-AUC": 0.7479,
+        "base_rate": 0.3772,
+        "P@20": 1.0,
+        "P@50": 0.96,
+        "P@100": 0.98,
+        "P@500": 0.956,
+        "P@top10%": 0.8181,
+        "lift@top10%": 2.1686,
+        "lost_imp_captured@top10%": 0.1561,
+        "site_P@20_mean": 0.93,
+        "fit_s": NaN
+      },
+      {
+        "model": "B1 momentum rule",
+        "PR-AUC": 0.65,
+        "ROC-AUC": 0.7232,
+        "base_rate": 0.3772,
+        "P@20": 1.0,
+        "P@50": 0.98,
+        "P@100": 0.98,
+        "P@500": 0.956,
+        "P@top10%": 0.8006,
+        "lift@top10%": 2.1222,
+        "lost_imp_captured@top10%": 0.1359,
+        "site_P@20_mean": 0.93,
+        "fit_s": NaN
+      },
+      {
+        "model": "B0 volume rule (w04)",
+        "PR-AUC": 0.3312,
+        "ROC-AUC": 0.4066,
+        "base_rate": 0.3772,
+        "P@20": 0.05,
+        "P@50": 0.08,
+        "P@100": 0.08,
+        "P@500": 0.12,
+        "P@top10%": 0.2555,
+        "lift@top10%": 0.6772,
+        "lost_imp_captured@top10%": 0.3962,
+        "site_P@20_mean": 0.1175,
+        "fit_s": NaN
+      }
+    ]
+  },
+  "test": {
+    "label_month": "2026-06",
+    "rows": 89237,
+    "base_rate": 0.3962,
+    "table": [
+      {
+        "model": "model \u2014 probability",
+        "PR-AUC": 0.7244,
+        "ROC-AUC": 0.8001,
+        "base_rate": 0.3962,
+        "P@20": 0.95,
+        "P@50": 0.92,
+        "P@100": 0.91,
+        "P@500": 0.914,
+        "P@top10%": 0.8569,
+        "lift@top10%": 2.1626,
+        "lost_imp_captured@top10%": 0.3294,
+        "site_P@20_mean": 0.8891,
+        "ROC-AUC (absolute label)": 0.7506
+      },
+      {
+        "model": "model \u2014 expected impact",
+        "PR-AUC": 0.4967,
+        "ROC-AUC": 0.6143,
+        "base_rate": 0.3962,
+        "P@20": 0.45,
+        "P@50": 0.56,
+        "P@100": 0.55,
+        "P@500": 0.576,
+        "P@top10%": 0.5733,
+        "lift@top10%": 1.447,
+        "lost_imp_captured@top10%": 0.6562,
+        "site_P@20_mean": 0.5522,
+        "ROC-AUC (absolute label)": 0.6295
+      },
+      {
+        "model": "B0 volume rule (w04)",
+        "PR-AUC": 0.3429,
+        "ROC-AUC": 0.3788,
+        "base_rate": 0.3962,
+        "P@20": 0.25,
+        "P@50": 0.14,
+        "P@100": 0.11,
+        "P@500": 0.086,
+        "P@top10%": 0.2082,
+        "lift@top10%": 0.5255,
+        "lost_imp_captured@top10%": 0.3804,
+        "site_P@20_mean": 0.1043,
+        "ROC-AUC (absolute label)": 0.4103
+      },
+      {
+        "model": "B1 momentum rule",
+        "PR-AUC": 0.6665,
+        "ROC-AUC": 0.7427,
+        "base_rate": 0.3962,
+        "P@20": 0.95,
+        "P@50": 0.92,
+        "P@100": 0.93,
+        "P@500": 0.954,
+        "P@top10%": 0.806,
+        "lift@top10%": 2.0342,
+        "lost_imp_captured@top10%": 0.149,
+        "site_P@20_mean": 0.8957,
+        "ROC-AUC (absolute label)": 0.7638
+      },
+      {
+        "model": "B2 site-relative momentum rule",
+        "PR-AUC": 0.6826,
+        "ROC-AUC": 0.7547,
+        "base_rate": 0.3962,
+        "P@20": 0.9,
+        "P@50": 0.92,
+        "P@100": 0.92,
+        "P@500": 0.954,
+        "P@top10%": 0.8225,
+        "lift@top10%": 2.0757,
+        "lost_imp_captured@top10%": 0.1741,
+        "site_P@20_mean": 0.8957,
+        "ROC-AUC (absolute label)": 0.7339
+      }
+    ],
+    "prauc_gap_vs_B2": {
+      "mean": 0.0408,
+      "ci95": [
+        0.0205,
+        0.0671
+      ],
+      "share_positive": 1.0
+    },
+    "rocauc_gap_vs_B2": {
+      "mean": 0.0455,
+      "ci95": [
+        0.0339,
+        0.0632
+      ]
+    },
+    "evaluated_once": true,
+    "decile_observed_rate": [
+      0.0723,
+      0.1126,
+      0.178,
+      0.241,
+      0.3159,
+      0.3848,
+      0.4789,
+      0.5977,
+      0.7242,
+      0.8569
+    ]
+  },
+  "robustness": {
+    "table": [
+      {
+        "model": "model \u2014 probability",
+        "PR-AUC": 0.7244,
+        "ROC-AUC": 0.8001,
+        "P@top10%": 0.8569,
+        "lift@top10%": 2.1626,
+        "site_P@20_mean": 0.8891
+      },
+      {
+        "model": "model \u2014 probability, unseen clients",
+        "PR-AUC": 0.6953,
+        "ROC-AUC": 0.7691,
+        "P@top10%": 0.8297,
+        "lift@top10%": 2.0938,
+        "site_P@20_mean": 0.8957
+      },
+      {
+        "model": "B2 site-relative momentum rule",
+        "PR-AUC": 0.6826,
+        "ROC-AUC": 0.7547,
+        "P@top10%": 0.8225,
+        "lift@top10%": 2.0757,
+        "site_P@20_mean": 0.8957
+      },
+      {
+        "model": "model \u2014 probability, no dim_content metadata",
+        "PR-AUC": 0.717,
+        "ROC-AUC": 0.7905,
+        "P@top10%": 0.8489,
+        "lift@top10%": 2.1425,
+        "site_P@20_mean": 0.887
+      }
+    ],
+    "permutation_importance_top10": [
+      {
+        "feature": "rel_mom_vs_site",
+        "importance": 0.1997,
+        "std": 0.0043
+      },
+      {
+        "feature": "mom_h2_vs_f3",
+        "importance": 0.0727,
+        "std": 0.0023
+      },
+      {
+        "feature": "ctr_90",
+        "importance": 0.0099,
+        "std": 0.0006
+      },
+      {
+        "feature": "site_mom_f3_vs_90",
+        "importance": 0.0066,
+        "std": 0.0003
+      },
+      {
+        "feature": "active_share_f3",
+        "importance": 0.0052,
+        "std": 0.0002
+      },
+      {
+        "feature": "log_imp_90",
+        "importance": 0.0044,
+        "std": 0.001
+      },
+      {
+        "feature": "word_count",
+        "importance": 0.0042,
+        "std": 0.0004
+      },
+      {
+        "feature": "site_mom_f3_vs_f1",
+        "importance": 0.0027,
+        "std": 0.0006
+      },
+      {
+        "feature": "ctr_delta",
+        "importance": 0.002,
+        "std": 0.0001
+      },
+      {
+        "feature": "pos_90",
+        "importance": 0.0019,
+        "std": 0.0003
+      }
+    ]
+  },
+  "error_analysis": {
+    "top10_false_positive_share": 0.1431,
+    "largest200_losses_in_bottom_half": 0.205,
+    "largest200_losses_drop_to_zero": 0.005
+  },
+  "sensitivity_threshold": [
+    {
+      "threshold": "0.7 x site median",
+      "model": "model \u2014 probability",
+      "base_rate": 0.341,
+      "PR-AUC": 0.6891,
+      "ROC-AUC": 0.8092
+    },
+    {
+      "threshold": "0.7 x site median",
+      "model": "B2 site-relative momentum rule",
+      "base_rate": 0.341,
+      "PR-AUC": 0.6442,
+      "ROC-AUC": 0.7591
+    },
+    {
+      "threshold": "0.7 x site median",
+      "model": "B1 momentum rule",
+      "base_rate": 0.341,
+      "PR-AUC": 0.6288,
+      "ROC-AUC": 0.7491
+    },
+    {
+      "threshold": "0.8 x site median",
+      "model": "model \u2014 probability",
+      "base_rate": 0.3962,
+      "PR-AUC": 0.7244,
+      "ROC-AUC": 0.8001
+    },
+    {
+      "threshold": "0.8 x site median",
+      "model": "B2 site-relative momentum rule",
+      "base_rate": 0.3962,
+      "PR-AUC": 0.6826,
+      "ROC-AUC": 0.7547
+    },
+    {
+      "threshold": "0.8 x site median",
+      "model": "B1 momentum rule",
+      "base_rate": 0.3962,
+      "PR-AUC": 0.6665,
+      "ROC-AUC": 0.7427
+    },
+    {
+      "threshold": "0.9 x site median",
+      "model": "model \u2014 probability",
+      "base_rate": 0.4488,
+      "PR-AUC": 0.7541,
+      "ROC-AUC": 0.7909
+    },
+    {
+      "threshold": "0.9 x site median",
+      "model": "B2 site-relative momentum rule",
+      "base_rate": 0.4488,
+      "PR-AUC": 0.7161,
+      "ROC-AUC": 0.7502
+    },
+    {
+      "threshold": "0.9 x site median",
+      "model": "B1 momentum rule",
+      "base_rate": 0.4488,
+      "PR-AUC": 0.7002,
+      "ROC-AUC": 0.7367
+    }
+  ],
+  "limitations": {
+    "test_months": 1,
+    "clients_in_test": 27,
+    "clients_in_training": 27,
+    "share_training_rows_from_nov2025_on": 0.8828,
+    "largest_client_share_of_test_rows": 0.2384,
+    "unseen_client_prauc_gap_vs_B2": 0.0126,
+    "mean_predicted_vs_observed_test": [
+      0.3852,
+      0.3962
+    ]
+  },
+  "queue_backtest": {
+    "by_k": [
+      {
+        "queue_top_k": 20,
+        "precision": 0.55,
+        "lift_vs_base": 1.3881,
+        "share_of_all_lost_impressions": 0.0151
+      },
+      {
+        "queue_top_k": 100,
+        "precision": 0.73,
+        "lift_vs_base": 1.8423,
+        "share_of_all_lost_impressions": 0.0531
+      },
+      {
+        "queue_top_k": 500,
+        "precision": 0.728,
+        "lift_vs_base": 1.8373,
+        "share_of_all_lost_impressions": 0.1395
+      },
+      {
+        "queue_top_k": 2000,
+        "precision": 0.838,
+        "lift_vs_base": 2.1149,
+        "share_of_all_lost_impressions": 0.332
+      }
+    ],
+    "by_action": [
+      {
+        "action": "EXPAND - opportunity",
+        "pages": 5248,
+        "observed_decline": 0.0793,
+        "share_of_lost_impressions": 0.0096
+      },
+      {
+        "action": "METADATA REVIEW",
+        "pages": 344,
+        "observed_decline": 0.8023,
+        "share_of_lost_impressions": 0.0026
+      },
+      {
+        "action": "MONITOR",
+        "pages": 57218,
+        "observed_decline": 0.2709,
+        "share_of_lost_impressions": 0.3644
+      },
+      {
+        "action": "PROTECT - page-one refresh",
+        "pages": 4447,
+        "observed_decline": 0.7407,
+        "share_of_lost_impressions": 0.4145
+      },
+      {
+        "action": "PRUNE / MERGE REVIEW",
+        "pages": 1424,
+        "observed_decline": 0.8048,
+        "share_of_lost_impressions": 0.0027
+      },
+      {
+        "action": "REFRESH - content",
+        "pages": 20556,
+        "observed_decline": 0.7164,
+        "share_of_lost_impressions": 0.2062
+      }
+    ]
+  },
+  "live_queue": {
+    "decision_date": "2026-06-30",
+    "pages_scored": 92932,
+    "pages_in_queue": 27879,
+    "action_summary": [
+      {
+        "action": "MONITOR",
+        "pages": 59740,
+        "median_risk": 0.2455,
+        "median_impressions_per_day": 23.0879,
+        "share_of_visibility_at_stake": 0.4421
+      },
+      {
+        "action": "PROTECT - page-one refresh",
+        "pages": 4127,
+        "median_risk": 0.8561,
+        "median_impressions_per_day": 182.1648,
+        "share_of_visibility_at_stake": 0.3138
+      },
+      {
+        "action": "REFRESH - content",
+        "pages": 19960,
+        "median_risk": 0.8037,
+        "median_impressions_per_day": 15.533,
+        "share_of_visibility_at_stake": 0.22
+      },
+      {
+        "action": "EXPAND - opportunity",
+        "pages": 5313,
+        "median_risk": 0.0814,
+        "median_impressions_per_day": 28.7582,
+        "share_of_visibility_at_stake": 0.0165
+      },
+      {
+        "action": "PRUNE / MERGE REVIEW",
+        "pages": 3160,
+        "median_risk": 0.8141,
+        "median_impressions_per_day": 5.044,
+        "share_of_visibility_at_stake": 0.0048
+      },
+      {
+        "action": "METADATA REVIEW",
+        "pages": 632,
+        "median_risk": 0.8145,
+        "median_impressions_per_day": 7.3077,
+        "share_of_visibility_at_stake": 0.0027
+      }
+    ],
+    "reason_code_frequency": {
+      "SLIDING_VS_SITE": 0.2784,
+      "LATE_MONTH_SLIDE": 0.2181,
+      "POSITION_WORSENING": 0.1964,
+      "PAGE_ONE": 0.1379,
+      "LOW_VISIBILITY": 0.0954,
+      "HIGH_VISIBILITY": 0.0664,
+      "CTR_FALLING": 0.0073
+    }
+  },
+  "abstract": "Which visible pages should a content editor review first, before they lose search visibility? Using the FlyRank pseudonymized warehouse release (78,835,655 daily rows, 27 Jan 2025 to 30 Jun 2026), we built a monthly page panel and labelled a page as declining when its next-month daily impressions fell more than 20% below the median page of its own site, so that site-wide shocks are not mistaken for page decay. A histogram gradient-boosting model using only information available at the decision date was selected on May 2026 and evaluated once on a sealed June 2026 month (89,237 pages, base rate 39.6%), reaching PR-AUC 0.724 versus 0.683 for the best transparent momentum rule (gap +0.041, 95% client-bootstrap CI +0.021 to +0.067), while an impact-ordered version of the score covers 66% of site-relative lost impressions in its top 10% of pages. The output is a ranked, reason-coded review queue for decision support; it does not show that refreshing a page causes recovery."
+}
